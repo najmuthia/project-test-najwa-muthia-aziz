@@ -30,8 +30,8 @@
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav ms-auto">
               <a class="nav-link" href="#">Work</a>
-              <a class="nav-link" href="#">Services</a>
               <a class="nav-link" href="#">About</a>
+              <a class="nav-link" href="#">Services</a>
               <a class="nav-link active" href="#">Ideas</a>
               <a class="nav-link" href="#">Careers</a>
               <a class="nav-link" href="#">Contact</a>
@@ -61,11 +61,11 @@
           </div>
           <div class="col-12 col-md-6 d-flex justify-content-end align-items-center gap-4">
             <div class="d-flex align-items-center">
-              <label for="floatingSelect" class="me-2">Show per Page:</label>
+              <label for="floatingSelect" class="me-2">Show per page:</label>
               <select 
                 class="form-select rounded-pill" 
                 id="floatingSelect" 
-                aria-label="Show per Page" 
+                aria-label="Show per page" 
                 style="width: auto;"
               >
                 <option value="10">10</option>
@@ -92,13 +92,13 @@
 
     <section id="card">
       <div class="container p-2" id="cardContainer">
-        <!-- Cards will be added dynamically -->
+        <!-- Cards dinamis -->
       </div>
     </section>
 
     <div class="center d-flex justify-content-center">
       <div class="pagination pb-5" id="pagination">
-        <!-- Pagination will be generated dynamically -->
+        <!-- Pagination dinamis -->
       </div>
     </div>
 
@@ -135,6 +135,17 @@
           postList.innerHTML = "";
 
           let imageToggle = true;
+          
+          function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('id-ID', options);
+            
+            const [day, month, year] = formattedDate.split(' ');
+            const monthUpper = month.toUpperCase();
+            
+            return `${parseInt(day)} ${monthUpper} ${year}`;
+          }
 
           data.data.forEach((post) => {
             const imageUrl = post.small_image && typeof post.small_image === "string"
@@ -155,7 +166,7 @@
                   style="object-fit: cover; height: 200px;"
                 >
                 <div class="card-body">
-                  <p class="card-date">${post.published_at}</p>
+                  <p class="card-date">${formatDate(post.published_at)}</p>
                   <p 
                     class="card-text fw-bold" 
                     style="max-height: 4.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"
