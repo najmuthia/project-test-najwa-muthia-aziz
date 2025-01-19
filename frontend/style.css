@@ -143,13 +143,13 @@ nav {
 
 .card-date {
     font-size: 0.875rem;
-    color: #6c757d;
+    color: #3d3d3d;
     margin-bottom: 0.5rem;
 }
 
 .card-text {
     font-size: 1rem;
-    color: #333;
+    color: black;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
