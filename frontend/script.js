@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     itemsPerPageSelect.value = initialItemsPerPage;
     updateDisplayText(initialItemsPerPage);
   
-    // Fungsi untuk menangani perubahan pada jumlah item per halaman
+    // Menangani perubahan pada jumlah item per halaman
     function handleItemsPerPageChange() {
       const selectedItems = parseInt(itemsPerPageSelect.value, 10);
       saveItemsPerPageToLocalStorage(selectedItems);
@@ -49,29 +49,29 @@ document.addEventListener("DOMContentLoaded", () => {
       displayTextElement.textContent = `Showing 1 - ${upperLimit} of 100`;
     }
   
-    // Mengontrol visibilitas kartu berdasarkan jumlah item per halaman
+    // Mengontrol visbility card berdasarkan jumlah item per halaman
     function displayCards(cardsPerPage) {
       const cards = document.querySelectorAll(".card");
   
-      // Sembunyikan semua kartu terlebih dahulu
+      // Sembunyikan semua card terlebih dahulu
       cards.forEach((card) => {
         card.style.display = "none";
       });
   
-      // Tampilkan hanya kartu sesuai dengan jumlah per halaman
+      // Tampilkan hanya card sesuai dengan jumlah per halaman
       for (let i = 0; i < cardsPerPage && i < cards.length; i++) {
         cards[i].style.display = "block";
       }
     }
   
-    // Menangani perubahan pada opsi sortir
+    // Menangani perubahan pada opsi sort
     function handleSortChange() {
       const selectedSortOption = sortSelect.value;
       saveSortPreferenceToLocalStorage(selectedSortOption);
       sortCards(selectedSortOption);
     }
   
-    // Efek paralaks pada scroll
+    // Parallax Scrolling
     function applyParallaxEffect() {
       const scrollPosition = window.pageYOffset;
   
@@ -99,20 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
       prevScrollPosition = scrollPosition;
     }
   
-    // Fungsi untuk menyimpan jumlah item per halaman ke localStorage
+    // Menyimpan jumlah item per page ke localStorage
     function saveItemsPerPageToLocalStorage(count) {
       localStorage.setItem("itemsPerPage", count);
     }
   
-    // Mendapatkan jumlah item per halaman dari localStorage
+    // Mendapatkan jumlah item per page dari localStorage
     function getItemsPerPageFromLocalStorage() {
       return parseInt(localStorage.getItem("itemsPerPage"), 10) || null;
     }
   
-    // Fungsi untuk menyimpan preferensi sortir ke localStorage
+    // Menyimpan preferensi sort ke localStorage
     function saveSortPreferenceToLocalStorage(sortValue) {
       localStorage.setItem("sortPreference", sortValue);
     }
     
   });
-  
