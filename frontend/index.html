@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Suitmedia</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <script src="assets/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg shadow-sm fixed-top navbar-dark scrolling-navbar" style="background-color:#ff6600;">
+        <div class="container">
+          <a class="navbar-brand fw-bold" href="#">
+            <img src="assets/logo.png" alt="Logo" width="120" height="50" class="d-inline-block align-text-top" />
+          </a>
+          <button 
+            class="navbar-toggler" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNavAltMarkup" 
+            aria-controls="navbarNavAltMarkup" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto">
+              <a class="nav-link" href="#">Work</a>
+              <a class="nav-link" href="#">Services</a>
+              <a class="nav-link" href="#">About</a>
+              <a class="nav-link active" href="#">Ideas</a>
+              <a class="nav-link" href="#">Careers</a>
+              <a class="nav-link" href="#">Contact</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <section id="banner">
+      <div class="parallax">
+        <div class="banner">
+          <img src="assets/background.jpg" alt="" loading="lazy" />
+          <div class="banner-text">
+            <h1>Ideas</h1>
+            <p>Where all our great things begin</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sort-list" class="py-4">
+      <div class="container">
+        <div class="row align-items-center d-flex justify-content-between">
+          <div class="col-12 col-md-6 mb-md-0">
+            <div class="text">Showing 1 - 10 of 100</div>
+          </div>
+          <div class="col-12 col-md-6 d-flex justify-content-end align-items-center gap-4">
+            <div class="d-flex align-items-center">
+              <label for="floatingSelect" class="me-2">Show per Page:</label>
+              <select 
+                class="form-select rounded-pill" 
+                id="floatingSelect" 
+                aria-label="Show per Page" 
+                style="width: auto;"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center">
+              <label for="sortBySelect" class="me-2">Sort by:</label>
+              <select 
+                class="form-select rounded-pill" 
+                id="sortBySelect" 
+                aria-label="Sort by" 
+                style="width: auto;"
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>    
+
+    <section id="card">
+      <div class="container p-2" id="cardContainer">
+        <!-- Cards will be added dynamically -->
+      </div>
+    </section>
+
+    <div class="center d-flex justify-content-center">
+      <div class="pagination pb-5" id="pagination">
+        <!-- Pagination will be generated dynamically -->
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedState = JSON.parse(localStorage.getItem("paginationState")) || {
+          pageNumber: 1,
+          pageSize: 10,
+          sort: "-published_at",
+        };
+
+        const apiUrl = "https://suitmedia-backend.suitdev.com/api/ideas";
+        const params = {
+          "page[number]": savedState.pageNumber,
+          "page[size]": savedState.pageSize,
+          append: ["small_image", "medium_image"],
+          sort: savedState.sort,
+        };
+
+        async function getData() {
+          try {
+            const response = await axios.get(apiUrl, { params });
+            return response.data;
+          } catch (error) {
+            console.error("Error fetching data:", error);
+            return { data: [] };
+          }
+        }
+
+        async function displayPosts() {
+          const data = await getData();
+          const postList = document.getElementById("cardContainer");
+          postList.innerHTML = "";
+
+          let imageToggle = true;
+
+          data.data.forEach((post) => {
+            const imageUrl = post.small_image && typeof post.small_image === "string"
+              ? post.small_image
+              : imageToggle
+              ? "assets/smartphone.jpg"
+              : "assets/filming.jpg";
+
+            imageToggle = !imageToggle;
+
+            const postHtml = `
+              <div class="card" style="width: 18rem;">
+                <img 
+                  src="${imageUrl}" 
+                  class="card-img-top" 
+                  alt="${post.title}" 
+                  loading="lazy" 
+                  style="object-fit: cover; height: 200px;"
+                >
+                <div class="card-body">
+                  <p class="card-date">${post.published_at}</p>
+                  <p 
+                    class="card-text fw-bold" 
+                    style="max-height: 4.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"
+                  >
+                    ${post.title}
+                  </p>
+                </div>
+              </div>
+            `;
+            postList.innerHTML += postHtml;
+          });
+        }
+
+        function handleSortAndShowPerPage() {
+          const sortBySelect = document.getElementById("sortBySelect");
+          const showPerPageSelect = document.getElementById("floatingSelect");
+
+          sortBySelect.value = savedState.sort === "-published_at" ? "newest" : "oldest";
+          showPerPageSelect.value = savedState.pageSize;
+
+          sortBySelect.addEventListener("change", (e) => {
+            params.sort = e.target.value === "newest" ? "-published_at" : "published_at";
+            updatePage(params["page[number]"]);
+          });
+
+          showPerPageSelect.addEventListener("change", (e) => {
+            params["page[size]"] = e.target.value;
+            updatePage(params["page[number]"]);
+          });
+        }
+
+        function generatePagination(totalPages, currentPage) {
+          const pagination = document.getElementById("pagination");
+          pagination.innerHTML = "";
+
+          const prevButton = document.createElement("a");
+          prevButton.href = "#";
+          prevButton.innerHTML = "&laquo;";
+          prevButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (currentPage > 1) {
+              updatePage(currentPage - 1);
+            }
+          });
+          pagination.appendChild(prevButton);
+
+          for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement("a");
+            pageButton.href = "#";
+            pageButton.textContent = i;
+            if (i === currentPage) pageButton.classList.add("active");
+            pageButton.addEventListener("click", (e) => {
+              e.preventDefault();
+              updatePage(i);
+            });
+            pagination.appendChild(pageButton);
+          }
+
+          const nextButton = document.createElement("a");
+          nextButton.href = "#";
+          nextButton.innerHTML = "&raquo;";
+          nextButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+              updatePage(currentPage + 1);
+            }
+          });
+          pagination.appendChild(nextButton);
+        }
+
+        function updatePage(pageNumber) {
+          params["page[number]"] = pageNumber;
+          updateUrlParams();
+          displayPosts();
+        }
+
+        function updateUrlParams() {
+          const url = new URL(window.location);
+          url.searchParams.set("page", params["page[number]"]);
+          url.searchParams.set("size", params["page[size]"]);
+          url.searchParams.set("sort", params.sort);
+          history.pushState(null, "", url);
+
+          localStorage.setItem("paginationState", JSON.stringify({
+            pageNumber: params["page[number]"],
+            pageSize: params["page[size]"],
+            sort: params.sort,
+          }));
+        }
+
+        displayPosts();
+        handleSortAndShowPerPage();
+        generatePagination(10, savedState.pageNumber);
+      });
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
